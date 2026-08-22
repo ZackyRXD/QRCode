@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyFreeGenerator - QR Code Generator</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- QRCode.js Library CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+
+  <!-- Navbar -->
+  <nav class="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-100">
+    <div class="font-bold text-xl tracking-tight text-slate-900">
+      MyFreeGenerator
+    </div>
+    <button class="bg-[#1e2533] hover:bg-slate-800 text-white text-sm font-medium px-5 py-2.5 rounded-md transition-colors">
+      Get Started
+    </button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-4 pt-16 pb-24 flex flex-col items-center">
+    
+    <!-- Header Section -->
+    <div class="text-center max-w-2xl mb-12">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+        Generate QR Codes Instantly
+      </h1>
+      <p class="text-slate-500 text-base sm:text-lg leading-relaxed">
+        Create crisp, high-resolution QR codes for links, text, or vCards with unmatched precision.
+      </p>
+    </div>
+
+    <!-- Card Container -->
+    <div class="w-full bg-white rounded-2xl shadow-xl shadow-slate-200/60 p-8 sm:p-10 border border-slate-100/80">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        
+        <!-- Form Left Side -->
+        <div class="space-y-6">
+          <!-- Tab Selector -->
+          <div class="inline-flex p-1 bg-slate-100 rounded-lg">
+            <button
+              id="tab-url"
+              onclick="switchTab('url')"
+              class="px-6 py-2 text-sm font-medium rounded-md transition-all bg-white text-slate-900 shadow-sm"
+            >
+              URL
+            </button>
+            <button
+              id="tab-text"
+              onclick="switchTab('text')"
+              class="px-6 py-2 text-sm font-medium rounded-md transition-all text-slate-600 hover:text-slate-900"
+            >
+              Text
+            </button>
+          </div>
+
+          <!-- Input Field -->
+          <div class="space-y-2">
+            <label id="input-label" class="block text-sm font-medium text-slate-600">
+              Destination URL
+            </label>
+            <input
+              type="text"
+              id="qr-input"
+              value="https://example.com"
+              placeholder="https://example.com"
+              class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent text-slate-800 text-sm transition-all"
+            />
+          </div>
+
+          <!-- Generate Button -->
+          <button
+            onclick="generateQRCode()"
+            class="w-full bg-[#1e2533] hover:bg-slate-800 text-white font-medium py-3 px-4 rounded-lg text-sm transition-colors shadow-sm"
+          >
+            Generate QR Code
+          </button>
+        </div>
+
+        <!-- Preview Right Side -->
+        <div class="flex flex-col items-center space-y-6">
+          <!-- QR Preview Box -->
+          <div class="w-full aspect-square max-w-[280px] bg-white rounded-2xl border border-slate-200 p-6 flex items-center justify-center shadow-inner">
+            <div id="qrcode"></div>
+          </div>
+
+          <!-- Download Button -->
+          <button
+            onclick="downloadQRCode()"
+            class="w-full max-w-[280px] flex items-center justify-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl text-sm transition-colors shadow-sm"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Download PNG
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Vanilla JavaScript Logic -->
+  <script>
+    let currentTab = 'url';
+    let qrCodeInstance = null;
+
+    const qrContainer = document.getElementById('qrcode');
+    const qrInput = document.getElementById('qr-input');
+    const inputLabel = document.getElementById('input-label');
+    const tabUrlBtn = document.getElementById('tab-url');
+    const tabTextBtn = document.getElementById('tab-text');
+
+    // Inisialisasi QR Code pertama kali
+    function initQRCode(text) {
+      qrContainer.innerHTML = '';
+      qrCodeInstance = new QRCode(qrContainer, {
+        text: text,
+        width: 160,
+        height: 160,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    // Ganti Tab (URL / Text)
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      if (tab === 'url') {
+        tabUrlBtn.className = "px-6 py-2 text-sm font-medium rounded-md transition-all bg-white text-slate-900 shadow-sm";
+        tabTextBtn.className = "px-6 py-2 text-sm font-medium rounded-md transition-all text-slate-600 hover:text-slate-900";
+        inputLabel.innerText = "Destination URL";
+        qrInput.value = "https://example.com";
+        qrInput.placeholder = "https://example.com";
+      } else {
+        tabTextBtn.className = "px-6 py-2 text-sm font-medium rounded-md transition-all bg-white text-slate-900 shadow-sm";
+        tabUrlBtn.className = "px-6 py-2 text-sm font-medium rounded-md transition-all text-slate-600 hover:text-slate-900";
+        inputLabel.innerText = "Content Text";
+        qrInput.value = "Hello World";
+        qrInput.placeholder = "Enter text here";
+      }
+
+      generateQRCode();
+    }
+
+    // Fungsi Generate QR Code
+    function generateQRCode() {
+      const val = qrInput.value.trim();
+      if (!val) return;
+      
+      qrContainer.innerHTML = '';
+      qrCodeInstance = new QRCode(qrContainer, {
+        text: val,
+        width: 160,
+        height: 160,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    // Fungsi Download PNG
+    function downloadQRCode() {
+      const img = qrContainer.querySelector('img');
+      const canvas = qrContainer.querySelector('canvas');
+
+      let imageSrc = '';
+      if (img && img.src) {
+        imageSrc = img.src;
+      } else if (canvas) {
+        imageSrc = canvas.toDataURL("image/png");
+      }
+
+      if (!imageSrc) return;
+
+      const link = document.createElement('a');
+      link.href = imageSrc;
+      link.download = `qrcode-${Date.now()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Jalankan saat pertama kali dimuat
+    window.onload = function() {
+      initQRCode(qrInput.value);
+    };
+  </script>
+</body>
+</html>
