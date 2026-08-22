@@ -1,0 +1,24 @@
+{
+  "name": "myfreegenerator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf dist && mkdir -p dist/assets dist/guide",
+    "build:css": "tailwindcss -i ./src/css/input.css -o ./dist/assets/styles.css --minify",
+    "build:js": "cp src/js/qr-generator.js dist/assets/qr-generator.js",
+    "build:html": "cp pages/index.html dist/index.html && cp pages/qr-code-for-url.html dist/ && cp pages/qr-code-for-text.html dist/ && cp pages/faq.html dist/ && cp pages/guide/qr-code-best-practices.html dist/guide/ && cp pages/sitemap.xml dist/ && cp pages/robots.txt dist/",
+    "build": "npm run clean && npm run build:css && npm run build:js && npm run build:html",
+    "serve": "npx http-server dist -p 8080"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.5.4",
+    "cssnano": "^8.0.8",
+    "postcss": "^8.5.26",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^3.4.19"
+  }
+}
